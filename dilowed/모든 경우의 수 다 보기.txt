@@ -1,0 +1,63 @@
+// 입력 형식 : 
+/*
+11 100 // 먼지 개수 필드크기 (시작점은 1,1 도착점은 SZ,SZ)
+64 5 // 먼지 좌표들
+91 72
+95 54
+39 31
+87 20
+70 53
+56 63
+69 58
+86 57
+83 6
+97 52
+*/
+#include<bits/stdc++.h>
+using namespace std;
+using pii = pair<int,int>;
+pii arr[32];
+int ans[1000000]; 
+bool vst[32];
+int n,SZ, minans = INT_MAX, maxans = 0, totalnum = 0;
+int dist(int x, int y)
+{
+  return abs(arr[x].first - arr[y].first) + abs(arr[x].second - arr[y].second);
+}
+void dfs(int x, int cnt, int D) // 현재위치 x번 점, 지금까지 고른 점의 개수 cnt, 이동비용 D
+{
+  if(cnt == n) {
+    int totaldist = D + dist(x, n+1);
+    ans[totaldist]++;
+    totalnum++;
+    minans = min(minans, totaldist);
+    maxans = max(maxans, totaldist);
+    return;
+  }
+  for(int i=1; i<=n; i++)
+  {
+    if(vst[i]) continue;
+    vst[i] = true;
+    dfs(i, cnt+1, D+dist(x,i)+1);
+    vst[i] = false;
+  }
+}
+int main()
+{
+  cin>>n>>SZ;
+  for(int i=1; i<=n; i++) 
+  {
+    cin>>arr[i].first>>arr[i].second;
+  }
+  arr[0].first = arr[0].second = 1;
+  arr[n+1].first = arr[n+1].second = SZ;
+  dfs(0,0,0);
+  int nu = 0;
+  for(int i=minans; i<=maxans; i++)
+  {
+    nu += ans[i];
+    cout<<"이동 비용: "<<i<<"  개수:"<<ans[i]<<" 누적개수:"<<nu<<'\n';
+  }
+  cout<<"총 개수"<<" "<<totalnum;
+}
+// 11개 <- 5~10초 12개 <- 1분~3분 13개 <- 1시간
